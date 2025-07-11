@@ -19,7 +19,7 @@ export const register: RequestHandler = async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email }).exec();
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -86,7 +86,7 @@ export const login: RequestHandler = async (req, res) => {
     }
 
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).exec();
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -129,7 +129,9 @@ export const getProfile: RequestHandler = async (req: AuthRequest, res) => {
   try {
     await connectDB();
 
-    const user = await User.findById(req.user?.userId).select("-password");
+    const user = await User.findById(req.user?.userId)
+      .select("-password")
+      .exec();
     if (!user) {
       return res.status(404).json({
         success: false,
